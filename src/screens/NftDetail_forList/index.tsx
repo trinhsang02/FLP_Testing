@@ -94,9 +94,6 @@ const NFTDetailList = ({ route }) => {
     )
   }
 
-
-
-
   //contracts address, abi
   const marketPlaceAddress = getBirdMarketPlaceAddress();
   const birdAddress = getBirdAddress();
@@ -222,7 +219,13 @@ const NFTDetailList = ({ route }) => {
                 placeholder="0.0"
                 keyboardType="numeric"
                 value={nftPrice}
-                onChangeText={setNftPrice}
+                onChangeText={(text) => {
+                  if (parseFloat(text) <= 0) {
+                    Alert.alert("Error", "Please enter a positive integer.", [{text: 'OK', style: 'default'}]);
+                  } else {
+                    setNftPrice(text);
+                  }
+                }}
                 maxLength={10}
                 editable={approvedAddress?.toString().toLowerCase() == marketPlaceAddress}
               />

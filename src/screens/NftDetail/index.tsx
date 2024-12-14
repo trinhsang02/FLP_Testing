@@ -6,8 +6,7 @@ import {
   Image,
   Button,
   TouchableOpacity,
-
-
+  Alert,
 } from "react-native";
 import { NftProps } from "../../type";
 import { useNavigation } from "@react-navigation/native";
@@ -185,7 +184,8 @@ const NFTDetail = ({ route }) => {
             }
           }
         } else {
-          // setRequetsModalVisible(true);
+          // Show message error 
+          Alert.alert("Error", "Insufficient balance to buy this NFT.", [{text: 'OK', style: 'default'}]);
           console.log("Approving...");
           if (isPrepareApproveTokenSuccess) {
             setTxLoading(true);
@@ -195,6 +195,7 @@ const NFTDetail = ({ route }) => {
           }
         }
       } catch (error) {
+        console.error(error);
       }
     }
   };

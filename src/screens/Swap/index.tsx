@@ -13,7 +13,6 @@ import {
   Platform,
 } from "react-native"; // Import Image from react-native
 import { useNavigation } from "@react-navigation/native";
-import Picker from "react-native-picker-select";
 
 import styles from "./style";
 import {
@@ -34,6 +33,7 @@ import {
   getFloppyAbi,
 } from "../../contracts/utils/getAbis";
 import { parseEther } from "../../contracts/utils/parseEther";
+import { Alert } from "react-native";
 import { ArrowPathIcon, InformationCircleIcon } from 'react-native-heroicons/outline'
 import Header from "../../components/Header";
 
@@ -247,21 +247,25 @@ const Swap = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={{ flexDirection: "column", flex: 1, justifyContent: "flex-start" }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ImageBackground
           source={require('../../assets/images/Background_Store.png')}
-          style={{ flex: 1 }}
+          style={{ display: "flex", flexDirection: "column", flex: 2 }}
         >
-          <Header address={address} screenName="Swap" />
+          <View style={{ flex: 1 }}>
+            <Header address={address} screenName="Swap" />
+          </View>
+          
           {/* Container tổng */}
+          <View style={{flex: 3}}>
           <View
             style={[
               styles.container,
-              parseEther(approvedAmount) < Number(coinAmount1) && coins.coin1 === "FLP"
-                ? { flex: 1 }
-                : { flex: 3 },
+              // parseEther(approvedAmount) < Number(coinAmount1) && coins.coin1 === "FLP"
+              //   ? { flex: 1 }
+              //   : { flex: 3 },
             ]}
           >
             <View style={styles.rectangle}>
@@ -276,13 +280,13 @@ const Swap = () => {
                 <Text style={styles.balance}>Balance: {balance.coin1}</Text>
               </View>
               <TextInput
-                style={
-                  Number(coinAmount1) > Number(balance.coin1)
-                    ? styles.textInputError
-                    : styles.textInput
-                }
+                style={styles.textInput}
                 onChangeText={(text) => {
-                  setCoinAmount1(text);
+                  if (parseFloat(text) > 0) {
+                    setCoinAmount1(text);
+                  } else {
+                    Alert.alert("Error", "Please enter a positive number.", [{text: 'OK', style: 'default'}]);
+                  }
                 }}
                 value={coinAmount1}
                 keyboardType="numeric"
@@ -293,8 +297,8 @@ const Swap = () => {
               />
             </View>
 
-            <TouchableOpacity onPress={() => swapCoins()}>
-              <ArrowPathIcon color="white" size="50" />
+            <TouchableOpacity onPress={() => swapCoins()} disabled={txLoading}>
+              <ArrowPathIcon color={txLoading ? "gray" : "white"} size="50" />
             </TouchableOpacity>
 
             <View style={styles.rectangle}>
@@ -367,6 +371,7 @@ const Swap = () => {
             >
               <Text style={styles.buttonText}>{buttonText()}</Text>
             </TouchableOpacity>
+          </View>
           </View>
         </ImageBackground>
       </TouchableWithoutFeedback>

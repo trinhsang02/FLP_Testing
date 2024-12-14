@@ -6,6 +6,15 @@ const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
 
+/**
+ * Updates the game state by handling touch events, updating the physics engine, 
+ * processing obstacles, and managing collision events.
+ * 
+ * @param entities - The current game entities including physics and obstacles.
+ * @param params - An object containing touch events, time delta, and dispatch function.
+ * @returns The updated entities after processing.
+ * @throws {Error} Throws an error if the physics engine fails to update.
+ */
 export const Physics = (entities, { touches, time, dispatch }) => {
   const engine = entities.physics.engine;
 
@@ -44,9 +53,12 @@ export const Physics = (entities, { touches, time, dispatch }) => {
   }
 
   // Handle collision events
-  Matter.Events.on(engine, "collisionStart", () => {
-    dispatch({ type: "game_over" });
-  });
+  if (!engine.hasCollisionHandler) {
+    Matter.Events.on(engine, "collisionStart", () => {
+      dispatch({ type: "game_over" });
+    });
+    engine.hasCollisionHandler = true; // Custom property to prevent duplicate registrations
+  };
 
   return entities;
 };
